@@ -76,7 +76,7 @@ const App = () => {
         headers: {
           'Content-Type': 'application/json',
           // CORS 문제 해결을 위해 필요할 수 있습니다.
-          'Access-Control-Allow-Origin': `http://${IP_ADDRESS}:5173`, 
+          // 'Access-Control-Allow-Origin': `http://${IP_ADDRESS}:5173`, 
         },
         // 요청 본문으로 이메일 객체를 JSON 형태로 전송
         body: JSON.stringify({ email: email }),
