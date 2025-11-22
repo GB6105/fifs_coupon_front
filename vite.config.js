@@ -14,8 +14,8 @@ export default defineConfig({
       'localhost', // 기존 허용
       '127.0.0.1', // 기존 허용
       'coupon.taegyunkim.com', 
-      '3.38.114.206' 
+      // '3.38.114.206' 
     ],
-    // host: true, // 외부 접속을 허용하려면 주석 해제 (필요시)
+    host: true, // 외부 접속을 허용하려면 주석 해제 (필요시)
   }
 });
