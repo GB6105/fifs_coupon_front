@@ -66,9 +66,9 @@ const App = () => {
       applyConfig(config); // Tailwind CDN 위에 동적으로 인라인 스타일 적용
     }
   }, [config, applyConfig]);
-
+  const IP_ADDRESS = "3.38.114.206";
   const memberRegisterAPI = useCallback(async (email) => {
-    const API_URL = "http://localhost:8080/member/register";
+    const API_URL = `http://${IP_ADDRESS}:8080/member/register`;
     
     try {
       const response = await fetch(API_URL, {
@@ -76,7 +76,7 @@ const App = () => {
         headers: {
           'Content-Type': 'application/json',
           // CORS 문제 해결을 위해 필요할 수 있습니다.
-          'Access-Control-Allow-Origin': 'http://localhost:5173', 
+          'Access-Control-Allow-Origin': `http://${IP_ADDRESS}:5173`, 
         },
         // 요청 본문으로 이메일 객체를 JSON 형태로 전송
         body: JSON.stringify({ email: email }),
@@ -108,7 +108,7 @@ const issueCouponAPI = useCallback(async (email, couponName) => {
       return { isOk: false, message: "유효하지 않은 쿠폰입니다." };
     }
 
-    const API_URL = "http://localhost:8080/coupon/issue/queue";
+    const API_URL = `http://${IP_ADDRESS}:8080/coupon/issue/queue`;
     
     try {
       const response = await fetch(API_URL, {
