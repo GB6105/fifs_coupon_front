@@ -28,6 +28,7 @@ const CouponInfoPage = ({
     const loadIssuedMembers = useCallback(async () => {
         if (selectedCouponName) {
             const emails = await fetchIssuedMembersAPI(selectedCouponName);
+            console.log("Fetched Issued Members:", emails);
             setIssuedEmails(emails);
         }
     }, [selectedCouponName, fetchIssuedMembersAPI]);
@@ -36,6 +37,7 @@ const CouponInfoPage = ({
     const loadRemainingStock = useCallback(async () => {
         if (selectedCouponName) {
             const stock = await fetchRemainingStockAPI(selectedCouponName);
+            console.log("Fetched Remaining Stock:", stock);
             setRemainingStock(stock);
         }
     }, [selectedCouponName, fetchRemainingStockAPI]);
