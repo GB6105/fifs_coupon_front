@@ -1,55 +1,87 @@
 // src/pages/CouponInfoPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Header from '../components/Header.jsx';
 
-const CouponInfoPage = ({ currentEmail, goToCouponList, config, showMessage, resetEmail, couponData, selectedCouponName, issueCouponAPI }) => {
-  const { REFERENCE_COUPONS, getRecordsForCoupon, getRemainingStock, emailAlreadyHasCoupon, currentRecordCount } = couponData;
-  const [isApplying, setIsApplying] = useState(false);
+const CouponInfoPage = ({ 
+  currentEmail, 
+  goToCouponList, 
+  config,
+  showMessage, 
+  resetEmail, 
+  couponData, 
+  selectedCouponName, 
+  issueCouponAPI,
+  fetchRemainingStockAPI,
+  fetchIssuedMembersAPI }) => {
 
-  // 선택된 쿠폰 정보 가져오기
-  const selectedCouponRef = REFERENCE_COUPONS.find(c => c.coupon_name === selectedCouponName);
-  const appliedRecords = getRecordsForCoupon(selectedCouponName);
-  const remainingStock = getRemainingStock(selectedCouponName);
-  const alreadyHas = currentEmail && emailAlreadyHasCoupon(currentEmail, selectedCouponName);
+    const { REFERENCE_COUPONS, getRecordsForCoupon, emailAlreadyHasCoupon } = couponData;
+    const [isApplying, setIsApplying] = useState(false);
+    const [remainingStock, setRemainingStock] = useState(0);
+    const [issuedEmails, setIssuedEmails] = useState([]);
 
-  // UI 업데이트 로직 (주로 couponData가 변경될 때 자동 실행됨)
-  useEffect(() => {
-    // 페이지 진입 시 selectedCouponName이 없으면 목록으로 돌아갑니다.
-    if (!selectedCouponName) {
-      goToCouponList();
-    }
-  }, [selectedCouponName, goToCouponList]);
+    // 선택된 쿠폰 정보 가져오기
+    const selectedCouponRef = REFERENCE_COUPONS.find(c => c.coupon_name === selectedCouponName);
+    const appliedRecords = getRecordsForCoupon(selectedCouponName); // Data SDK 기록은 여전히 필요
+    const alreadyHas = issuedEmails.includes(currentEmail);
+
+    //  신청자 목록 로드 함수
+    const loadIssuedMembers = useCallback(async () => {
+        if (selectedCouponName) {
+            const emails = await fetchIssuedMembersAPI(selectedCouponName);
+            setIssuedEmails(emails);
+        }
+    }, [selectedCouponName, fetchIssuedMembersAPI]);
+
+    //  잔여 수량을 API에서 가져오는 함수
+    const loadRemainingStock = useCallback(async () => {
+        if (selectedCouponName) {
+            const stock = await fetchRemainingStockAPI(selectedCouponName);
+            setRemainingStock(stock);
+        }
+    }, [selectedCouponName, fetchRemainingStockAPI]);
+
+    // UI 업데이트 로직
+    // 컴포넌트 마운트 시 잔여 수량 로드 및 API 호출 후 재로드 
+    useEffect(() => {
+        if (!selectedCouponName) {
+            goToCouponList();
+            return;
+        }
+        loadRemainingStock();
+        loadIssuedMembers();
+    }, [selectedCouponName, goToCouponList, loadRemainingStock, loadIssuedMembers]);
   
-const handleApply = async () => {
-    if (isApplying || !currentEmail || !selectedCouponName) return;
+    // handleApply 함수 내에서 API 호출 후 재로드
+    const handleApply = async () => {
+        if (isApplying || !currentEmail || !selectedCouponName) return;
+        
+        if (remainingStock <= 0) {
+            showMessage("이미 선착순 마감된 쿠폰입니다.", 2600);
+            return;
+        }
+        if (alreadyHas) { 
+            showMessage("이미 이 쿠폰을 신청하셨어요.", 2600);
+            return;
+        }
 
-    if (remainingStock <= 0) {
-      showMessage("이미 선착순 마감된 쿠폰입니다.", 2600);
-      return;
-    }
-    if (alreadyHas) {
-      showMessage("이미 이 쿠폰을 신청하셨어요.", 2600);
-      return;
-    }
-    
-
-    setIsApplying(true);
-    
-    // 1. 새로운 API 호출
-    const result = await issueCouponAPI(currentEmail, selectedCouponName);
-    
-    // 2. 결과 처리
-    if (result.isOk) {
-      // API 요청이 성공했더라도, 잔여 수량 반영을 위해 데이터 새로고침 필요
-      showMessage("쿠폰 신청 완료! 잠시 후 내역을 확인할 수 있어요.", 2600);
-    } else {
-      // API에서 반환된 구체적인 오류 메시지 사용
-      showMessage(`신청 실패: ${result.message}`, 3500); 
-    }
-
-    setIsApplying(false);
-  };
-  
+        setIsApplying(true);
+        
+        const result = await issueCouponAPI(currentEmail, selectedCouponName);
+        
+        if (result.isOk) {
+            showMessage("쿠폰 신청 완료! 잠시 후 내역을 확인할 수 있어요.", 2600);
+            //  API 호출 성공 후, 잔여 수량을 Redis에서 다시 가져오도록 요청
+            await loadRemainingStock();
+            await loadIssuedMembers(); 
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await loadRemainingStock();
+            await loadIssuedMembers();
+        } else {
+            showMessage(`신청 실패: ${result.message}`, 3500); 
+        }
+        
+        setIsApplying(false);
+    };
   // 스타일 정의
   const smallSize = config.font_size * 0.85;
   const tinySize = config.font_size * 0.75;
@@ -75,7 +107,7 @@ const handleApply = async () => {
 
   // 버튼 비활성화 조건
   const applyDisabled = isApplying || remainingStock <= 0 || alreadyHas || !currentEmail;
-
+  
   return (
     <div className="h-full flex flex-col">
       <Header currentEmail={currentEmail} resetEmail={resetEmail} config={config} />
@@ -133,30 +165,26 @@ const handleApply = async () => {
               {/* Status List */}
               <section aria-label="쿠폰 신청 내역">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-sm">신청한 사람 목록</h3>
-                  <p id="coupon-applied-count" className="text-xs opacity-80">{appliedRecords.length}명</p>
+                    <h3 className="font-semibold text-sm">신청한 사람 목록</h3>
+                    <p id="coupon-applied-count" className="text-xs opacity-80">{issuedEmails.length}명</p>
                 </div>
                 <div id="status-list-wrapper" className="rounded-xl px-4 py-3 shadow-sm border-2" style={cardStyle}>
-                  <ul id="status-list" className="divide-y text-sm">
-                    {appliedRecords.length === 0 ? (
-                      <p id="status-empty" className="text-sm opacity-80" style={{ fontSize: smallSize + 'px' }}>아직 이 쿠폰을 신청한 사람이 없어요.</p>
-                    ) : (
-                      appliedRecords.map((rec, index) => {
-                        const d = rec.applied_at ? new Date(rec.applied_at) : null;
-                        const timeDisplay = d && !isNaN(d.getTime()) ? d.toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).replace(",", "") : "";
-                        const metaText = `#${index + 1} · ${rec.coupon_code || '코드 미지정'}${timeDisplay ? ` · ${timeDisplay}` : ''}`;
-                        
-                        return (
-                          <li key={index} className="py-1.5 flex items-center justify-between gap-3 text-xs sm:text-sm" style={{ fontSize: smallSize + 'px' }}>
-                            <span>{rec.email}</span>
-                            <span className="opacity-70 text-[11px]" style={{ fontSize: tinySize + 'px' }}>{metaText}</span>
-                          </li>
-                        );
-                      })
-                    )}
-                  </ul>
+                    <ul id="status-list" className="divide-y text-sm">
+                        {issuedEmails.length === 0 ? (
+                            <p id="status-empty" className="text-sm opacity-80" style={{ fontSize: smallSize + 'px' }}>아직 이 쿠폰을 신청한 사람이 없어요.</p>
+                        ) : (
+                            issuedEmails.map((email, index) => {
+                                return (
+                                    <li key={email} className="py-1.5 flex items-center justify-between gap-3 text-xs sm:text-sm" style={{ fontSize: smallSize + 'px' }}>
+                                        <span>{email}</span>
+                                        <span className="opacity-70 text-[11px]" style={{ fontSize: tinySize + 'px' }}>#{index + 1}</span>
+                                    </li>
+                                );
+                            })
+                        )}
+                    </ul>
                 </div>
-              </section>
+            </section>
             </div>
           </section>
         </div>

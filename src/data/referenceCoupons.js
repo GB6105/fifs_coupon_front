@@ -2,14 +2,14 @@
 
 export const REFERENCE_COUPONS = [
   {
-    coupon_name: "Starbugs",
-    display_name: "Starbugs",
+    coupon_name: "StarBugs",
+    display_name: "StarBugs",
     total_stock: 10,
     id: 1 
   },
   {
-    coupon_name: "TwoThumb",
-    display_name: "TwoThumb",
+    coupon_name: "TwoThumb Place",
+    display_name: "TwoThumb Place",
     total_stock: 10,
     id: 2
   },

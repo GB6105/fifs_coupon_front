@@ -2,7 +2,6 @@
 import React from 'react';
 
 const Header = ({ currentEmail, resetEmail, config, applyConfig }) => {
-  // applyConfig에서 설정된 스타일이 적용되도록 config.primary_action_color를 사용
   const primaryColor = config.primary_action_color;
 
   return (

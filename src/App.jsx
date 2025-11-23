@@ -31,15 +31,6 @@ const App = () => {
   const couponData = useCouponData(); // allRecords, applyCoupon 등 제공
   const { config, applyConfig, resetConfig } = useElementConfig(); // config 상태 및 SDK 초기화/업데이트 로직 제공
 
-  // 3. 네비게이션 로직
-  // const goToSignup = useCallback(() => {
-  //   setCurrentEmail(null);
-  //   setSelectedCouponName(null);
-  //   localStorage.removeItem('currentEmail');
-  //   localStorage.removeItem('selectedCouponName');
-  //   setCurrentPage(PAGES.SIGNUP);
-  // }, []);
-
   const goToCouponList = useCallback(() => {
     setSelectedCouponName(null);
     localStorage.removeItem('selectedCouponName');
@@ -66,8 +57,11 @@ const App = () => {
       applyConfig(config); // Tailwind CDN 위에 동적으로 인라인 스타일 적용
     }
   }, [config, applyConfig]);
-  const IP_ADDRESS = "3.38.114.206";
-  // const IP_ADDRESS = "coupon.taegyunkim.com";
+  
+  
+  // const IP_ADDRESS = "3.38.114.206";
+
+  const IP_ADDRESS = "localhost"; // 로컬 테스트용
   const memberRegisterAPI = useCallback(async (email) => {
     const API_URL = `http://${IP_ADDRESS}:8080/member/register`;
     
@@ -100,10 +94,8 @@ const App = () => {
   }, []);
 
 const issueCouponAPI = useCallback(async (email, couponName) => {
-    // ⭐️ 쿠폰 이름을 정수 ID로 변환 ⭐️
     const couponId = COUPON_NAME_TO_ID[couponName];
 
-    // 유효성 검사: 매핑되는 ID가 없는 경우 처리
     if (couponId === undefined) {
       console.error(`Unknown coupon name: ${couponName}`);
       return { isOk: false, message: "유효하지 않은 쿠폰입니다." };
@@ -132,7 +124,57 @@ const issueCouponAPI = useCallback(async (email, couponName) => {
     }
 }, []);
 
-  // 5. 페이지 렌더링
+const fetchRemainingStockAPI = useCallback(async (couponName) => {
+    // 1. 쿠폰 이름을 정수 ID로 변환 (COUPON_NAME_TO_ID에서 정수 ID 조회)
+    const couponId = COUPON_NAME_TO_ID[couponName];
+
+    if (couponId === undefined) {
+        return 0;
+    }
+
+    // 2. API 호출
+    const API_URL = `http://${IP_ADDRESS}:8080/coupon/stock/${couponId}`;
+
+    try {
+        const response = await fetch(API_URL);
+        
+        if (response.ok) {
+            const data = await response.json(); 
+            return data.remainingStock !== undefined ? data.remainingStock : 0; 
+        } else {
+            console.error(`Failed to fetch stock for ID ${couponId}: ${response.status}`);
+            return 0;
+        }
+    } catch (error) {
+        console.error("Stock API Network Error:", error);
+        return 0;
+    }
+}, []);
+
+const fetchIssuedMembersAPI = useCallback(async (couponName) => {
+    const couponId = COUPON_NAME_TO_ID[couponName];
+    if (couponId === undefined) return [];
+
+    const API_URL = `http://${IP_ADDRESS}:8080/member/issued-members/${couponId}`;
+
+    try {
+        const response = await fetch(API_URL);
+        if (response.ok) {
+            // 백엔드가 Set<String> (JSON 배열)을 반환한다고 가정
+            const data = await response.json(); 
+            // ⭐️ 백엔드에서 받은 String 배열 (이메일 목록)을 반환 ⭐️
+            return Array.isArray(data) ? data : []; 
+        } else {
+            console.error(`Failed to fetch issued members: ${response.status}`);
+            return [];
+        }
+    } catch (error) {
+        console.error("Issued Members API Network Error:", error);
+        return [];
+    }
+}, []);
+
+// 페이지 렌더링
 let PageComponent;
 const commonProps = { currentEmail, goToCouponList, goToCouponInfo, showMessage, resetEmail, config, couponData };
 
@@ -147,7 +189,9 @@ case PAGES.COUPON_INFO:
           <CouponInfoPage 
               {...commonProps} 
               selectedCouponName={selectedCouponName} 
-              issueCouponAPI={issueCouponAPI} 
+              issueCouponAPI={issueCouponAPI}
+              fetchRemainingStockAPI={fetchRemainingStockAPI}
+              fetchIssuedMembersAPI={fetchIssuedMembersAPI} 
           />
       );
       break;
