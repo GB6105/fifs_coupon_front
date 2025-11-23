@@ -14,7 +14,7 @@ import Header from "./components/Header.jsx";
 // const IP_ADDRESS = "localhost"; // 로컬 테스트용
 // const IP_ADDRESS = "coupon.taegynkim.com";
 const IP_ADDRESS = "3.38.114.206";
-const BASE_URL = `http://${IP_ADDRESS}:8080`; // 백엔드 서버 기본 URL
+const BASE_URL = `http://${IP_ADDRESS}`; // 백엔드 서버 기본 URL
 
 // 가상의 페이지 열거형
 const PAGES = {
