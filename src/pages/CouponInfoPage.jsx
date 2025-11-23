@@ -53,16 +53,16 @@ const CouponInfoPage = ({
   
     // handleApply 함수 내에서 API 호출 후 재로드
     const handleApply = async () => {
-        if (isApplying || !currentEmail || !selectedCouponName) return;
+        // if (isApplying || !currentEmail || !selectedCouponName) return;
         
-        if (remainingStock <= 0) {
-            showMessage("이미 선착순 마감된 쿠폰입니다.", 2600);
-            return;
-        }
-        if (alreadyHas) { 
-            showMessage("이미 이 쿠폰을 신청하셨어요.", 2600);
-            return;
-        }
+        // if (remainingStock <= 0) {
+        //     showMessage("이미 선착순 마감된 쿠폰입니다.", 2600);
+        //     return;
+        // }
+        // if (alreadyHas) { 
+        //     showMessage("이미 이 쿠폰을 신청하셨어요.", 2600);
+        //     return;
+        // }
 
         setIsApplying(true);
         

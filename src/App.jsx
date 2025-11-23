@@ -11,6 +11,10 @@ import { COUPON_NAME_TO_ID } from './data/referenceCoupons.js';
 import MessageBar from "./components/MessageBar.jsx"; 
 import Header from "./components/Header.jsx";
 
+// const IP_ADDRESS = "localhost"; // 로컬 테스트용
+const IP_ADDRESS = "coupon.taegynkim.com";
+const BASE_URL = `http://${IP_ADDRESS}`;
+
 // 가상의 페이지 열거형
 const PAGES = {
   SIGNUP: 'signup',
@@ -59,12 +63,10 @@ const App = () => {
   }, [config, applyConfig]);
   
   
-  // const IP_ADDRESS = "3.38.114.206";
 
-  // const IP_ADDRESS = "localhost"; // 로컬 테스트용
-  const IP_ADDRESS = "coupon.taegynkim.com";
+
   const memberRegisterAPI = useCallback(async (email) => {
-    const API_URL = `http://${IP_ADDRESS}:8080/member/register`;
+    const API_URL = `${BASE_URL}/member/register`;
     
     try {
       const response = await fetch(API_URL, {
@@ -102,7 +104,7 @@ const issueCouponAPI = useCallback(async (email, couponName) => {
       return { isOk: false, message: "유효하지 않은 쿠폰입니다." };
     }
 
-    const API_URL = `http://${IP_ADDRESS}:8080/coupon/issue/queue`;
+    const API_URL = `${BASE_URL}/coupon/issue/queue`;
     
     try {
       const response = await fetch(API_URL, {
@@ -134,7 +136,7 @@ const fetchRemainingStockAPI = useCallback(async (couponName) => {
     }
 
     // 2. API 호출
-    const API_URL = `http://${IP_ADDRESS}:8080/coupon/stock/${couponId}`;
+    const API_URL = `${BASE_URL}/coupon/stock/${couponId}`;
 
     try {
         const response = await fetch(API_URL);
@@ -156,7 +158,7 @@ const fetchIssuedMembersAPI = useCallback(async (couponName) => {
     const couponId = COUPON_NAME_TO_ID[couponName];
     if (couponId === undefined) return [];
 
-    const API_URL = `http://${IP_ADDRESS}:8080/member/issued-members/${couponId}`;
+    const API_URL = `${BASE_URL}/member/issued-members/${couponId}`;
 
     try {
         const response = await fetch(API_URL);
