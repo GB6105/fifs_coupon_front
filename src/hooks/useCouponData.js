@@ -1,4 +1,5 @@
-// src/hooks/useCouponData.js
+// 로컬용 임시 쿠폰 데이터 파일
+
 import { useState, useEffect } from 'react';
 import { REFERENCE_COUPONS } from '../data/referenceCoupons.js';
 
@@ -7,7 +8,6 @@ export const useCouponData = () => {
   const [allRecords, setAllRecords] = useState([]);
   const currentRecordCount = allRecords.length;
 
-  // Data SDK 핸들러
   const dataHandler = {
     onDataChanged(data) {
       setAllRecords(Array.isArray(data) ? data : []);
@@ -20,7 +20,6 @@ export const useCouponData = () => {
       const initResult = await window.dataSdk.init(dataHandler);
       if (!initResult.isOk) {
         console.error("데이터 저장 기능을 초기화하지 못했습니다.");
-        // Production에서 showMessage를 호출해야 함 (useToast와 연동 필요)
       }
     }
     initDataSdk();
@@ -48,7 +47,6 @@ export const useCouponData = () => {
   const applyCoupon = async (email, couponName) => {
     if (!window.dataSdk) return { isOk: false };
     
-    // ... (기존 app.js의 couponCode 생성 로직)
     const codeSuffix = Math.floor(1000 + Math.random() * 9000);
     const couponCode =
       couponName

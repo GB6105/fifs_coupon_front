@@ -1,4 +1,3 @@
-// src/pages/SignupPage.jsx
 import React, { useState } from 'react';
 import Header from '../components/Header.jsx';
 
@@ -19,7 +18,6 @@ const SignupPage = ({ currentEmail, setCurrentEmail, goToCouponList, config, sho
     setIsSigningUp(true);
 
     try {
-      // API 호출 로직을 App.jsx에서 받아 실행
       const success = await memberRegisterAPI(trimmedEmail);
 
       if (success) {
@@ -27,13 +25,11 @@ const SignupPage = ({ currentEmail, setCurrentEmail, goToCouponList, config, sho
         localStorage.setItem('currentEmail', trimmedEmail);
 
         showMessage("이메일 등록 완료! 쿠폰을 선택해 주세요.", 2500);
-        goToCouponList(); // API 성공 시 다음 페이지로 이동
+        goToCouponList();
       } else {
-        // API 호출은 성공했으나 (200 OK), 백엔드 로직상 등록 실패(예: 이메일 중복 등)
         showMessage("등록 실패: 이미 등록된 이메일이거나 서버 오류입니다.", 3500);
       }
     } catch (error) {
-      // 네트워크 오류 또는 서버 응답 오류 (4xx, 5xx)
       console.error("멤버 등록 API 호출 오류:", error);
       showMessage("네트워크 오류 또는 서버에 연결할 수 없습니다.", 3500);
     } finally {

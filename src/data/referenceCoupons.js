@@ -1,5 +1,3 @@
-// src/data/referenceCoupons.js
-
 export const REFERENCE_COUPONS = [
   {
     coupon_name: "StarBugs",

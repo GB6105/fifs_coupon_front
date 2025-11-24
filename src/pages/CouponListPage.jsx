@@ -1,4 +1,3 @@
-// src/pages/CouponListPage.jsx
 import React from 'react';
 import Header from '../components/Header.jsx';
 
@@ -79,8 +78,6 @@ const CouponListPage = ({ currentEmail, goToCouponList, goToCouponInfo, config, 
         </div>
       </main>
 
-      {/* Footer는 App.jsx에서 렌더링되므로, 페이지 컴포넌트에는 포함하지 않는 것이 일반적입니다. */}
-      {/* 하지만 원본 HTML 구조를 유지하기 위해 포함합니다. */}
       <footer className="w-full mt-auto">
         <div className="max-w-3xl mx-auto px-6 pb-6 pt-4 text-xs opacity-80 flex items-center justify-between" style={{ fontSize: tinySize + 'px' }}>
           <p id="footer-text">{config.footer_text}</p>

@@ -1,4 +1,3 @@
-// src/hooks/useToast.js
 import { useState, useCallback } from 'react';
 
 export const useToast = () => {

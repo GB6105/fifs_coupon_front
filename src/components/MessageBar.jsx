@@ -1,4 +1,3 @@
-// src/components/MessageBar.jsx
 import React from 'react';
 
 const MessageBar = ({ message, isVisible, hideMessage, config }) => {

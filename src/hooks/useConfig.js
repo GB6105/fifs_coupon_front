@@ -1,7 +1,5 @@
-// src/hooks/useConfig.js
 import { useState, useEffect, useCallback } from 'react';
 
-// Element SDK를 위한 기본 설정
 const defaultConfig = {
   background_color: "#0f172a", 
   surface_color: "#111827", 
@@ -28,13 +26,12 @@ export const useElementConfig = () => {
         // 1. React 상태 업데이트
         setConfig(cfg);
 
-        // 2. DOM 레벨 스타일 적용 (전역)
+        // 2. DOM 레벨 스타일 적용
         document.body.style.backgroundColor = cfg.background_color;
         document.body.style.color = cfg.text_color;
         const fullFontStack = cfg.font_family + ", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
         document.body.style.fontFamily = fullFontStack;
         
-        // NOTE: 개별 컴포넌트의 인라인 스타일은 config 상태를 통해 처리됩니다.
     }, []);
 
     useEffect(() => {
@@ -43,7 +40,6 @@ export const useElementConfig = () => {
             return;
         }
         
-        // --- Element SDK 초기화 및 Config 매핑 로직 (원본 app.js에서 가져옴) ---
         window.elementSdk.init({
             defaultConfig,
             onConfigChange: (newConfig) => {
@@ -80,7 +76,6 @@ export const useElementConfig = () => {
                 ])
         });
 
-        // 초기 config 적용
         applyConfigToUI(window.elementSdk.config || defaultConfig);
     }, [applyConfigToUI]);
 

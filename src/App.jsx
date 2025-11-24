@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from './hooks/useToast';
 import { useCouponData } from './hooks/useCouponData';
@@ -16,7 +15,6 @@ import Header from "./components/Header.jsx";
 const IP_ADDRESS = "3.38.114.206";
 const BASE_URL = `http://${IP_ADDRESS}:8080`; // 백엔드 서버 기본 URL
 
-// 가상의 페이지 열거형
 const PAGES = {
   SIGNUP: 'signup',
   COUPON_LIST: 'coupon',
@@ -33,8 +31,8 @@ const App = () => {
 
   // 2. Custom Hooks
   const { message, isVisible, showMessage, hideMessage } = useToast();
-  const couponData = useCouponData(); // allRecords, applyCoupon 등 제공
-  const { config, applyConfig, resetConfig } = useElementConfig(); // config 상태 및 SDK 초기화/업데이트 로직 제공
+  const couponData = useCouponData(); 
+  const { config, applyConfig, resetConfig } = useElementConfig(); 
 
   const goToCouponList = useCallback(() => {
     setSelectedCouponName(null);
@@ -56,10 +54,10 @@ const App = () => {
     setCurrentPage(PAGES.SIGNUP);
   }, []);
 
-  // 4. 전역 스타일 적용 (config 변경 시)
+
   useEffect(() => {
     if (config) {
-      applyConfig(config); // Tailwind CDN 위에 동적으로 인라인 스타일 적용
+      applyConfig(config);
     }
   }, [config, applyConfig]);
   
@@ -74,26 +72,23 @@ const App = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // CORS 문제 해결을 위해 필요할 수 있습니다.
           // 'Access-Control-Allow-Origin': `http://${IP_ADDRESS}:5173`, 
         },
-        // 요청 본문으로 이메일 객체를 JSON 형태로 전송
+
         body: JSON.stringify({ email: email }),
       });
 
       // HTTP 상태 코드가 200번대인지 확인 (성공)
       if (response.ok) {
-        // 서버에서 응답 본문이 필요하다면 여기서 처리할 수 있습니다.
-        // const result = await response.json(); 
-        return true; // 등록 성공
+
+        return true; 
       } else {
-        // 4xx 또는 5xx 오류 시
         console.error(`Registration failed with status: ${response.status}`);
-        return false; // 등록 실패 (서버 응답 오류)
+        return false; 
       }
     } catch (error) {
       console.error("Network or Fetch Error:", error);
-      throw error; // SignupPage.jsx에서 오류를 catch하도록 던짐
+      throw error; 
     }
   }, []);
 
@@ -129,14 +124,12 @@ const issueCouponAPI = useCallback(async (email, couponName) => {
 }, []);
 
 const fetchRemainingStockAPI = useCallback(async (couponName) => {
-    // 1. 쿠폰 이름을 정수 ID로 변환 (COUPON_NAME_TO_ID에서 정수 ID 조회)
     const couponId = COUPON_NAME_TO_ID[couponName];
 
     if (couponId === undefined) {
         return 0;
     }
 
-    // 2. API 호출
     const API_URL = `${BASE_URL}/coupon/stock/${couponId}`;
 
     try {
@@ -164,9 +157,7 @@ const fetchIssuedMembersAPI = useCallback(async (couponName) => {
     try {
         const response = await fetch(API_URL);
         if (response.ok) {
-            // 백엔드가 Set<String> (JSON 배열)을 반환한다고 가정
             const data = await response.json(); 
-            // ⭐️ 백엔드에서 받은 String 배열 (이메일 목록)을 반환 ⭐️
             return Array.isArray(data) ? data : []; 
         } else {
             console.error(`Failed to fetch issued members: ${response.status}`);
@@ -184,7 +175,6 @@ const commonProps = { currentEmail, goToCouponList, goToCouponInfo, showMessage,
 
 switch (currentPage) {
     case PAGES.COUPON_LIST:
-        // 쿠폰 목록 페이지 렌더링
         PageComponent = <CouponListPage {...commonProps} />;
         break;
 
@@ -202,7 +192,6 @@ case PAGES.COUPON_INFO:
 
     case PAGES.SIGNUP:
     default:
-        // 이메일 등록 페이지 렌더링 (기본값)
         PageComponent = (
             <SignupPage 
                 {...commonProps} 

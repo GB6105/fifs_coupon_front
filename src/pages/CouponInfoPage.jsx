@@ -1,4 +1,3 @@
-// src/pages/CouponInfoPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import Header from '../components/Header.jsx';
 
