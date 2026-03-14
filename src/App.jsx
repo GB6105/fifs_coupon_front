@@ -10,10 +10,7 @@ import { COUPON_NAME_TO_ID } from './data/referenceCoupons.js';
 import MessageBar from "./components/MessageBar.jsx"; 
 import Header from "./components/Header.jsx";
 
-// const IP_ADDRESS = "localhost"; // 로컬 테스트용
-// const IP_ADDRESS = "coupon.taegynkim.com";
-const IP_ADDRESS = "3.38.114.206";
-const BASE_URL = `http://${IP_ADDRESS}:8080`; // 백엔드 서버 기본 URL
+const BASE_URL = import.meta.env.VITE_API_BASE_URL; // 백엔드 서버 기본 URL
 
 const PAGES = {
   SIGNUP: 'signup',
@@ -30,7 +27,7 @@ const App = () => {
   );
 
   // 2. Custom Hooks
-  const { message, isVisible, showMessage, hideMessage } = useToast();
+  const { message, isVisible, type, showMessage, hideMessage } = useToast();
   const couponData = useCouponData(); 
   const { config, applyConfig, resetConfig } = useElementConfig(); 
 
@@ -205,7 +202,7 @@ case PAGES.COUPON_INFO:
 return (
     <div id="app-root" className="h-full" style={{ backgroundColor: config.background_color, color: config.text_color, fontFamily: config.font_family }}>
         {PageComponent}
-        <MessageBar message={message} isVisible={isVisible} hideMessage={hideMessage} config={config} />
+        <MessageBar message={message} isVisible={isVisible} hideMessage={hideMessage} config={config} type={type} />
     </div>
 );
 };

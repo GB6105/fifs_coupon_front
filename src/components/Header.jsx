@@ -7,13 +7,13 @@ const Header = ({ currentEmail, resetEmail, config, applyConfig }) => {
     <header className="w-full">
       <div className="max-w-3xl mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* Logo Icon */}
+          {/* 로고 SVG — 배경 원형 알파값 조정 및 패딩 개선 */}
           <svg
             className="w-9 h-9 rounded-full p-1.5"
             id="logo-circle"
             viewBox="0 0 24 24"
             aria-hidden="true"
-            style={{ backgroundColor: primaryColor + "22", color: primaryColor }}
+            style={{ backgroundColor: primaryColor + "25", color: primaryColor }}
           >
             <rect x="0" y="0" width="24" height="24" rx="12"></rect>
             <path
@@ -31,7 +31,8 @@ const Header = ({ currentEmail, resetEmail, config, applyConfig }) => {
             ></path>
           </svg>
           <div>
-            <h1 id="main-title" className="font-semibold tracking-tight" style={{ fontSize: (config.font_size * 1.8) + 'px' }}>
+            {/* 타이틀 font-bold로 강화 */}
+            <h1 id="main-title" className="font-bold tracking-tight" style={{ fontSize: (config.font_size * 1.8) + 'px' }}>
               {config.main_title}
             </h1>
             <p id="header-tagline" className="text-sm opacity-80" style={{ fontSize: (config.font_size * 0.85) + 'px' }}>
@@ -40,10 +41,11 @@ const Header = ({ currentEmail, resetEmail, config, applyConfig }) => {
           </div>
         </div>
         <nav aria-label="주요 내비게이션">
+          {/* 처음으로 버튼 — hover 시 opacity 트랜지션 추가 */}
           <button
             id="nav-reset"
             type="button"
-            className="text-xs px-3 py-1.5 rounded-full border transition-colors focus-visible:outline-none"
+            className="text-xs px-3 py-1.5 rounded-full border transition-colors transition-opacity duration-150 hover:opacity-70 focus-visible:outline-none"
             onClick={resetEmail}
             style={{ borderColor: config.secondary_action_color, color: config.text_color, fontSize: (config.font_size * 0.85) + 'px' }}
           >

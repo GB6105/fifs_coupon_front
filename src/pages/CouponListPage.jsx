@@ -10,7 +10,7 @@ const CouponListPage = ({ currentEmail, goToCouponList, goToCouponInfo, config, 
 
   const handleCouponClick = (couponName) => {
     if (!currentEmail) {
-      showMessage("먼저 이메일을 등록해 주세요.", 2500);
+      showMessage("먼저 이메일을 등록해 주세요.", 2500, 'info');
       return;
     }
     goToCouponInfo(couponName);

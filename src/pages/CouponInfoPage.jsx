@@ -27,7 +27,6 @@ const CouponInfoPage = ({
     const loadIssuedMembers = useCallback(async () => {
         if (selectedCouponName) {
             const emails = await fetchIssuedMembersAPI(selectedCouponName);
-            console.log("Fetched Issued Members:", emails);
             setIssuedEmails(emails);
         }
     }, [selectedCouponName, fetchIssuedMembersAPI]);
@@ -36,7 +35,6 @@ const CouponInfoPage = ({
     const loadRemainingStock = useCallback(async () => {
         if (selectedCouponName) {
             const stock = await fetchRemainingStockAPI(selectedCouponName);
-            console.log("Fetched Remaining Stock:", stock);
             setRemainingStock(stock);
         }
     }, [selectedCouponName, fetchRemainingStockAPI]);
@@ -54,23 +52,23 @@ const CouponInfoPage = ({
   
     // handleApply 함수 내에서 API 호출 후 재로드
     const handleApply = async () => {
-        // if (isApplying || !currentEmail || !selectedCouponName) return;
-        
-        // if (remainingStock <= 0) {
-        //     showMessage("이미 선착순 마감된 쿠폰입니다.", 2600);
-        //     return;
-        // }
-        // if (alreadyHas) { 
-        //     showMessage("이미 이 쿠폰을 신청하셨어요.", 2600);
-        //     return;
-        // }
+        if (isApplying || !currentEmail || !selectedCouponName) return;
+
+        if (remainingStock <= 0) {
+            showMessage("이미 선착순 마감된 쿠폰입니다.", 2600, 'error');
+            return;
+        }
+        if (alreadyHas) {
+            showMessage("이미 이 쿠폰을 신청하셨어요.", 2600, 'info');
+            return;
+        }
 
         setIsApplying(true);
         
         const result = await issueCouponAPI(currentEmail, selectedCouponName);
         
         if (result.isOk) {
-            showMessage("쿠폰 신청 완료! 잠시 후 내역을 확인할 수 있어요.", 2600);
+            showMessage("쿠폰 신청 완료! 잠시 후 내역을 확인할 수 있어요.", 2600, 'success');
             //  API 호출 성공 후, 잔여 수량을 Redis에서 다시 가져오도록 요청
             await loadRemainingStock();
             await loadIssuedMembers(); 
@@ -78,7 +76,7 @@ const CouponInfoPage = ({
             await loadRemainingStock();
             await loadIssuedMembers();
         } else {
-            showMessage(`신청 실패: ${result.message}`, 3500); 
+            showMessage(`신청 실패: ${result.message}`, 3500, 'error');
         }
         
         setIsApplying(false);
