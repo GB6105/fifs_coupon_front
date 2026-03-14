@@ -15,3 +15,31 @@ html, body {
   outline-offset: 2px;
 }
 @view-transition { navigation: auto; }
+
+/* 스켈레톤 로딩 애니메이션 keyframe */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* 스켈레톤 로딩 클래스 */
+.skeleton {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* 카드 hover 트랜지션 유틸리티 */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* 프로그레스 바 래퍼 클래스 */
+.progress-bar {
+  height: 0.5rem;
+  border-radius: 9999px;
+  overflow: hidden;
+}
